@@ -16,14 +16,17 @@ class User:
         self.config_file_name = f"{user_name}.json"
         self.api_url = api_url
         self.token = None
+        print("Initialsied correctly")
 
     def register(self):
+        print("inside register")
         if not os.path.exists(self.config_file_name):
             response = requests.post(self.api_url+"/api/users", json={ "user_name" : self.user_name })
             if response.status_code != 201:
                 print(f"[{response.status_code}]")
                 exit()
             else:
+                print("registering...")
                 json_response = response.json()
                 self.user_id = json_response.get("user_id")
                 self.token = json_response.get("token")
