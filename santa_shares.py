@@ -1,4 +1,6 @@
 import os, requests, json
+import sys
+import pandas as pd
 
 class Shop:
     def __init__(self, api_url):
@@ -24,7 +26,7 @@ class User:
             response = requests.post(self.api_url+"/api/users", json={ "user_name" : self.user_name })
             if response.status_code != 201:
                 print(f"[{response.status_code}]")
-                exit()
+                sys.exit()
             else:
                 print("registering...")
                 json_response = response.json()
@@ -55,3 +57,23 @@ class User:
     def sell(self, item_id, amount):
         return requests.post(f"{self.api_url}/api/sell", headers=self.headers, json={ "item_id" : item_id, "amount" : amount })
         #if response.status != 201: print(f"[{response.status}] [{response.message}]")
+        
+    def get_prices(self):
+        # get the shop items
+        allItems = myShop.get_items()
+
+        #order the list:
+        # Create DataFrame
+        df = pd.DataFrame(allItems)
+
+        # sort by price
+        df_sorted = df.sort_values(by=['price'])
+        return df_sorted
+    
+    def buy_cheap_stuff(self,myUser,df,myStuff):
+        #myStuff = pd.DataFrame({'item_id' : [], 'price_bought' : []})
+
+        # buy ALL THE CHEAP THINGS
+        for row in df.itertuples():
+            myUser.buy(row.item_id,row.amount)
+            myStuff.append({'item_id': row.item_id, 'price_bought': df([item_id,'price'])})
